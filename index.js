@@ -51,15 +51,23 @@ function getTODOUser(TODOs, user) {
 
 function getSortUser(TODOs) {
     const sortUserTODO = [];
+    const nameDict = {};
+    nameDict[null] = [];
     for (const TODO of TODOs) {
         if (TODO.split(';').length >= 3) {
-            sortUserTODO.unshift(TODO);
+            const part = TODO.split(';')[0];
+            let name = part.slice(8);
+            if (!Object.keys(nameDict).includes(name)){
+                nameDict[name] = [];
+            }
+            nameDict[name].push(TODO);
         }
         else {
-            sortUserTODO.push(TODO);
+            nameDict[null].push(TODO);
         }
     }
-    return sortUserTODO;
+
+    return nameDict;
 }
 
 function getSortDate(TODOs) {
@@ -76,6 +84,7 @@ function getSortDate(TODOs) {
     }
     return sortUserTODO;
 }
+
 
 function processCommand(command) {
     const TODOs = getTODO();
@@ -96,7 +105,9 @@ function processCommand(command) {
             console.log(items.map(x => x[0]));
             break;
         case 'sort user':
-            console.log(getSortUser(TODOs));
+            let usersDict = getSortUser(TODOs);
+            var items = Object.keys(usersDict).map(key => [key, usersDict[key]]);
+            console.log(items.sort());
             break;
         case 'sort date':
             let sortByDateTODO = getSortDate(TODOs);
