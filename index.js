@@ -20,7 +20,7 @@ function getTODO() {
         for (const line of fileLines) {
             const index = line.indexOf("// TODO");
             if (index == 0 || index > 0 && line[index - 1] != "\"") {
-                todoStrings.push(line);
+                todoStrings.push(line.slice(index));
             }
         }
     }
@@ -28,10 +28,11 @@ function getTODO() {
 }
 
 function getImportant(TODOs) {
-    const important = [];
+    const important = {};
     for (const TODO of TODOs) {
-        if (TODO.includes('!')){
-            important.push(TODO);
+        const count = TODO.split("!").length - 1
+        if (count !== 0){
+            important[TODO] = count;
         }
     }
     return important;
@@ -61,6 +62,21 @@ function getSortUser(TODOs) {
     return sortUserTODO;
 }
 
+function getSortDate(TODOs) {
+    const sortUserTODO = {};
+    for (const TODO of TODOs) {
+        let splitedTODO = TODO.split(';');
+        if (splitedTODO.length >= 3) {
+            let date = splitedTODO[1].trim();
+            sortUserTODO[TODO] = date;
+        }
+        else {
+            sortUserTODO[TODO] = 0;
+        }
+    }
+    return sortUserTODO;
+}
+
 function processCommand(command) {
     const TODOs = getTODO();
     switch (command) {
@@ -71,10 +87,26 @@ function processCommand(command) {
             console.log(TODOs);
             break;
         case 'important':
-            console.log(getImportant(TODOs));
+            console.log(getImportant(TODOs).keys());
+            break;
+        case 'sort importance':
+            let importantTODOs = getImportant(TODOs);
+            var items = Object.keys(importantTODOs).map(key => [key, importantTODOs[key]]);
+            items.sort((first, second) => second[1] - first[1]);
+            console.log(items.map(x => x[0]));
             break;
         case 'sort user':
             console.log(getSortUser(TODOs));
+            break;
+        case 'sort date':
+            let sortByDateTODO = getSortDate(TODOs);
+            var items = Object.keys(sortByDateTODO).map(key => [key, sortByDateTODO[key]]);
+            items.sort((a, b) => {
+                let dateA = a[1] === "0" ? new Date(0) : new Date(a[1]);
+                let dateB = b[1] === "0" ? new Date(0) : new Date(b[1]);
+                return dateB - dateA;
+            });
+            console.log(items.map(x => x[0]));
             break;
         default:
             if (command.includes('user')) {
