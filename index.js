@@ -23,16 +23,30 @@ function getTODO() {
             }
         }
     }
-    console.log(todoStrings);
+    return todoStrings;
+}
+
+function getImportant(TODOs) {
+    const important = [];
+    for (const TODO of TODOs) {
+        if (TODO.includes('!')){
+            important.push(TODO);
+        }
+    }
+    return important;
 }
 
 function processCommand(command) {
+    const TODOs = getTODO();
     switch (command) {
         case 'exit':
             process.exit(0);
             break;
         case 'show':
-            getTODO();
+            console.log(TODOs);
+            break;
+        case 'important':
+            console.log(getImportant(TODOs));
             break;
         default:
             console.log('wrong command');
