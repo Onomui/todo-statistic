@@ -36,6 +36,16 @@ function getImportant(TODOs) {
     return important;
 }
 
+function getTODOUser(TODOs, user) {
+    const userTODO = [];
+    for (const TODO of TODOs) {
+        if (TODO.includes(user)){
+            userTODO.push(TODO);
+        }
+    }
+    return userTODO;
+
+}
 function processCommand(command) {
     const TODOs = getTODO();
     switch (command) {
@@ -49,6 +59,11 @@ function processCommand(command) {
             console.log(getImportant(TODOs));
             break;
         default:
+            if (command.includes('user')) {
+                let user = command.split(" ")[1];
+                console.log(getTODOUser(TODOs, user));
+                break;
+            }
             console.log('wrong command');
             break;
     }
