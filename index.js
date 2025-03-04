@@ -18,7 +18,8 @@ function getTODO() {
     for (const fileText of filesTexts) {
         const fileLines = fileText.split('\n');
         for (const line of fileLines) {
-            if (line.includes("// TODO")) {
+            const index = line.indexOf("// TODO");
+            if (index == 0 || index > 0 && line[index - 1] != "\"") {
                 todoStrings.push(line);
             }
         }
@@ -46,6 +47,20 @@ function getTODOUser(TODOs, user) {
     return userTODO;
 
 }
+
+function getSortUser(TODOs) {
+    const sortUserTODO = [];
+    for (const TODO of TODOs) {
+        if (TODO.split(';').length >= 3) {
+            sortUserTODO.unshift(TODO);
+        }
+        else {
+            sortUserTODO.push(TODO);
+        }
+    }
+    return sortUserTODO;
+}
+
 function processCommand(command) {
     const TODOs = getTODO();
     switch (command) {
@@ -57,6 +72,9 @@ function processCommand(command) {
             break;
         case 'important':
             console.log(getImportant(TODOs));
+            break;
+        case 'sort user':
+            console.log(getSortUser(TODOs));
             break;
         default:
             if (command.includes('user')) {
